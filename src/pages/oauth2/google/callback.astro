@@ -1,19 +1,35 @@
 ---
+export const prerender = false
 ---
 
-<script is:inline>
-    // TODO get the access token from the url 
-    // TODO POST request to handler ( will set cookie and redirect to home )
-    // TODO add intercept if token is valid and user try to access callback => redirect 
-    // TODO display info from token ( in .astro / react tsx )
+<script>
 
-    // e.g
-    // http://localhost:4321/oauth2/google/callback#state=state_parameter_passthrough_value&access_token=TEST_TOK&token_type=Bearer&expires_in=3599&scope=https://www.googleapis.com/auth/youtube.readonly
-    window.location.hash.substring(1)
+    ( async () => {
+        if ( window.location.hash != "" ) {
+        try {
+          const hash = window.location.hash.substring(1);
 
-    console.log(window.location.hash)
+          const response = await fetch('/oauth2/google/checkAuth', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            cache: 'no-cache',
+            body: JSON.stringify({"params": new URLSearchParams(hash).toString()})
+          });
+
+          if ( response.status !== 200 ) {
+            throw new Error("Failed to login");
+          }
+
+          window.location.href = "/";
+          
+        } catch ( e ) {
+          alert("Error: Failed to login");
+          window.location.href = "/login";
+        }
+      }
+    })()
+
 </script>
-
-<p>
-    callback
-</p>
