@@ -11,21 +11,65 @@ import { GiChiliPepper } from "react-icons/gi";
 
 import riz_curry from '../../../assets/riz_curry.png'
 import sauc from "../../../assets/sauc.png"
+import steak_spag from "../../../assets/steak_spag.png"
+import poulet_caram from "../../../assets/poulet_caram.png"
+
 import { HiPlus } from "react-icons/hi";
 import { CiShoppingBasket } from "react-icons/ci";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { FaPlus } from "react-icons/fa";
 
 
+
+export interface Meal {
+    id: number;
+    title: string;
+    image: string;
+    kcal: number;
+    spicy: 0 | 1 | 2 ;
+}
+
+
 export default function Dashboard({userDetail}: Record<string, any>) {
+
+
+
+
+    const mockMeals: Meal[] = [
+        {
+            id:1,
+            title: "Riz au curry",
+            image: riz_curry.src,
+            kcal: 400,
+            spicy: 1
+        },
+        {
+            id:2,
+            title: "Saucisse grillée",
+            image: sauc.src,
+            kcal: 702,
+            spicy: 0
+        },
+        {
+            id:3,
+            title: "Poulet caramélisé",
+            image: poulet_caram.src,
+            kcal: 280,
+            spicy: 1
+        },
+        {
+            id:4,
+            title: "Steak spaghetti",
+            image: steak_spag.src,
+            kcal: 437,
+            spicy: 0
+        }
+    ]
+
 
 
     return ( 
         <div className="h-screen bg-white flow-root">
-
-
-
-
 
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -89,7 +133,7 @@ export default function Dashboard({userDetail}: Record<string, any>) {
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-2">
                         {
-                            [1,2,3,4,5,6].map( (item, index:number) => {
+                            mockMeals.map( (meal:Meal, index:number) => {
                                 return (
                                     <motion.div 
                                         initial={{ opacity: 0, y: 30 }}
@@ -98,7 +142,14 @@ export default function Dashboard({userDetail}: Record<string, any>) {
                                         className="bg-slate-50 rounded-lg shadow-md"
                                         key={index}>
                                         <div className="w-full relative">
-                                            <div className="absolute bg-green-400 text-black left-0 top-0 rounded-br-lg rounded-tl-lg shadow-sm p-2 font-mono text-sm">400 Kcal</div>
+                                            <div 
+                                              className={`
+                                                absolute left-0 top-0 rounded-br-lg rounded-tl-lg shadow-sm p-2 font-mono text-sm text-white
+                                                ${meal.kcal < 400 ? 'bg-green-600/70' : meal.kcal < 700 ? 'bg-yellow-400/70' : 'bg-red-600/70'}
+                                              `}
+                                                >
+                                                {meal.kcal} Kcal
+                                            </div>
                                             <motion.div
                                                 initial={{ opacity: 0, y: 30 }}
                                                 animate={{ opacity: 1, y: 0 }}
@@ -106,22 +157,28 @@ export default function Dashboard({userDetail}: Record<string, any>) {
                                                 className="absolute bg-[#FFA24B] text-black right-0 top-0 rounded-bl-lg rounded-tr-lg shadow-sm p-2 font-mono w-[3em] text-center font-bold text-sm">
                                                 1
                                             </motion.div>
-                                            <img src={riz_curry.src} alt={`plat ${index}`} className="w-full h-[260px] rounded-t-lg object-cover" />
+                                            <img src={meal.image} alt={`plat ${index}`} className="w-full h-[260px] rounded-t-lg object-cover" />
                                             <div className="p-3 text-xl font-sans flex flex-col sm:flex-row sm:justify-between items-center gap-3 sm:gap-0">
                                                 <div>
                                                     <div>
-                                                        <p>Poulet Curry Riz</p>
+                                                        <p>{meal.title}</p>
                                                     </div>
                                                     <div className="flex gap-1 py-2 justify-center md:justify-start">
-                                                        <GiChiliPepper className="text-red-600 text-2xl"/>
-                                                        <GiChiliPepper className="text-red-600 text-2xl"/>
-                                                        <GiChiliPepper className="text-slate-600 text-2xl"/>
+                                                        {
+                                                            [0,1,2].map( (lvlSpicy, index) => {
+                                                                return (
+                                                                    meal.spicy - 1 >= lvlSpicy ?
+                                                                    <GiChiliPepper key={index} className="text-red-600 text-2xl"/>
+                                                                    :
+                                                                    <GiChiliPepper key={index} className="text-gray-300 text-2xl"/>
+                                                                )
+                                                            })
+                                                        }
+
                                                     </div>
                                                 </div>
                                                 <div className="w-full sm:w-1/4 shadow-sm rounded-lg bg-[#FFB84C] py-2 px-4 transition-colors duration-200 hover:bg-[#FFA24B] cursor-pointer text-white font-medium hover:text-black">
-                                                    <button className="w-full h-full flex items-center justify-center" onClick={() => {
-                                                        alert("PI");
-                                                    }}>
+                                                    <button className="w-full h-full flex items-center justify-center" onClick={() => { alert("PI"); }}>
                                                         <HiPlus className="text-2xl" />
                                                     </button>
                                                 </div>
@@ -138,8 +195,11 @@ export default function Dashboard({userDetail}: Record<string, any>) {
             <div className="mt-5 mb-5 h-[5em]">
             </div>
 
-            <div className="fixed bottom-0 left-0 w-full bg-[#FFA24B] text-white text-center p-4 z-50 h-[6.2em] md:h-[10em]">
-
+            <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: "easeOut", delay: 0.4 }}
+                className="fixed bottom-0 left-0 w-full bg-[#FFA24B] text-white text-center p-4 z-50 h-[6.2em] md:h-[10em]">
                 <div className="flex justify-around md:justify-center md:gap-5 items-center">
                 
                     <div className="grid auto-cols-max grid-flow-col gap-2">
@@ -154,18 +214,13 @@ export default function Dashboard({userDetail}: Record<string, any>) {
 
    
                     <div className="px-4 md:px-0">
-                        <button disabled className="bg-gradient-to-r from-orange-500 via-red-400 to-orange-500 text-white font-extrabold text-sm sm:text-base md:text-lg uppercase tracking-wide px-5 py-3 sm:px-6 sm:py-3 md:px-8 md:py-4 rounded-full shadow-2xl hover:scale-105 hover:shadow-orange-500/50 transition-all duration-300 active:scale-95">
+                        <button className="bg-gradient-to-r from-orange-500 via-red-400 to-orange-500 text-white font-extrabold text-sm sm:text-base md:text-lg uppercase tracking-wide px-5 py-3 sm:px-6 sm:py-3 md:px-8 md:py-4 rounded-full shadow-2xl hover:scale-105 hover:shadow-orange-500/50 transition-all duration-300 active:scale-95">
                             Commander maintenant
                         </button>
                     </div>
 
-
-
-
                 </div>
-
-
-            </div>
+            </motion.div>
 
 
         </div>
