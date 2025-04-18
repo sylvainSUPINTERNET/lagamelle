@@ -160,13 +160,6 @@ export default function Dashboard({userDetail}: Record<string, any>) {
                                                 >
                                                 {meal.kcal} Kcal
                                             </div>
-                                            <motion.div
-                                                initial={{ opacity: 0, y: 30 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                transition={{ duration: 0.4, ease: "easeOut", delay: 0.2 }}
-                                                className="absolute bg-[#FFA24B] text-black right-0 top-0 rounded-bl-lg rounded-tr-lg shadow-sm p-2 font-mono w-[3em] text-center font-bold text-sm">
-                                                1
-                                            </motion.div>
                                             <img src={meal.image} alt={`plat ${index}`} className="w-full h-[260px] rounded-t-lg object-cover" />
                                             <div className="p-3 text-xl font-sans flex flex-col sm:flex-row sm:justify-between items-center gap-3 sm:gap-0">
                                                 <div>
@@ -187,14 +180,28 @@ export default function Dashboard({userDetail}: Record<string, any>) {
 
                                                     </div>
                                                 </div>
-                                                <div className="w-full sm:w-1/4 shadow-sm rounded-lg bg-[#FFB84C] py-2 px-4 transition-colors duration-200 hover:bg-[#FFA24B] cursor-pointer text-white font-medium hover:text-black"
-                                                 onClick={e => {
-                                                    addToOrder(meal);
-                                                 }}>
-                                                    <button className="w-full h-full flex items-center justify-center">
-                                                        <HiPlus className="text-2xl" />
-                                                    </button>
-                                                </div>
+
+                                                {
+                                                    selectedMeal.findIndex((m) => m === null) !== -1 ?
+                                                    <div className="w-full sm:w-1/4 shadow-sm rounded-lg bg-[#FFB84C] py-2 px-4 transition-colors duration-200 hover:bg-[#FFA24B] cursor-pointer text-white font-medium hover:text-black"
+                                                        onClick={e => {
+                                                        addToOrder(meal);
+                                                        }}>
+                                                        <button className="w-full h-full flex items-center justify-center">
+                                                            <HiPlus className="text-2xl" />
+                                                        </button>
+                                                    </div>
+                                                :
+                                                    <div className="w-full sm:w-1/4 shadow-sm rounded-lg bg-slate-300/60 py-2 px-4 transition-colors duration-200  cursor-pointer text-slate-800 font-medium"
+                                                        onClick={e => {
+                                                        addToOrder(meal);
+                                                        }}>
+                                                        <button className="w-full h-full flex items-center justify-center" disabled>
+                                                            <HiPlus className="text-2xl" />
+                                                        </button>
+                                                    </div>
+                                                }
+
                                             </div>
                                         </div>
                                     </motion.div>
@@ -219,7 +226,7 @@ export default function Dashboard({userDetail}: Record<string, any>) {
                         {
                             selectedMeal.map((meal:Meal|null, index) => (
                             meal === null ?
-                                <div key={index} className="border-2 border-dashed border-slate-600 bg-orange-100 w-[2em] h-[2em] md:w-[6em] md:h-[6em] flex items-center justify-center">
+                                <div key={index} className="border-2 border-dashed border-slate-600 bg-orange-100 w-[2em] h-[2em] md:w-[6em] md:h-[6em] flex items-center justify-center rounded-lg">
                                     <FaPlus className="text-2xl text-slate-600" />
                                 </div>
                             :
@@ -229,7 +236,7 @@ export default function Dashboard({userDetail}: Record<string, any>) {
                             //     />
                             // </div>
                             
-                            <div key={index} className="border-2 border-solid border-slate-600 rounded-lg w-[2em] h-[2em] md:w-[6em] md:h-[6em] flex items-center justify-center">
+                            <div key={index} className="border-2 border-solid border-orange-600/40 rounded-lg w-[2em] h-[2em] md:w-[6em] md:h-[6em] flex items-center justify-center">
                                 <AnimatePresence mode="wait">
                                     <motion.img
                                     key={meal.id}
