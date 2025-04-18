@@ -4,7 +4,7 @@ import ClipCard from "./clips/ClipCard"
 import ClipItInput from "./ytb/ClipItInput"
 import { Button, Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
 import { BiPaint } from "react-icons/bi";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FaPhotoVideo } from "react-icons/fa";
 import { FaExclamationCircle } from "react-icons/fa";
 import { GiChiliPepper } from "react-icons/gi";
@@ -31,9 +31,6 @@ export interface Meal {
 
 
 export default function Dashboard({userDetail}: Record<string, any>) {
-
-
-
 
     const mockMeals: Meal[] = [
         {
@@ -64,8 +61,21 @@ export default function Dashboard({userDetail}: Record<string, any>) {
             kcal: 437,
             spicy: 0
         }
-    ]
+    ];
 
+
+    const [selectedMeal, setSelectedMeal] = useState<(Meal|null)[]>([null, null, null, null, null]);
+
+
+    function addToOrder(meal:Meal) {
+        const newSelectedMeal = [...selectedMeal];
+        const index = selectedMeal.findIndex((m) => m === null);
+
+        if (index !== -1) {
+            newSelectedMeal[index] = meal;
+            setSelectedMeal(newSelectedMeal);
+        }
+    }
 
 
     return ( 
@@ -77,7 +87,7 @@ export default function Dashboard({userDetail}: Record<string, any>) {
                 transition={{ duration: 0.2, ease: "easeOut", delay: 0.2 }}>
                 <div className="container mx-auto w-full mt-4 p-2">
                     <div className="flex p-2 items-center">
-                        <div className="flex-1">
+                        <div className="flex-1 text-center">
                             <p className="text-sm md:text-lg text-gray-700 font-medium">🔥 Promo 20% sur votre première commande avec le code <span className="bg-orange-500 text-white text-md md:text-2xl p-1 rounded-lg font-bold font-mono shadow-sm">LAGAM2025</span></p>
                         </div>
                         {/* <div className="ml-4">
@@ -177,8 +187,11 @@ export default function Dashboard({userDetail}: Record<string, any>) {
 
                                                     </div>
                                                 </div>
-                                                <div className="w-full sm:w-1/4 shadow-sm rounded-lg bg-[#FFB84C] py-2 px-4 transition-colors duration-200 hover:bg-[#FFA24B] cursor-pointer text-white font-medium hover:text-black">
-                                                    <button className="w-full h-full flex items-center justify-center" onClick={() => { alert("PI"); }}>
+                                                <div className="w-full sm:w-1/4 shadow-sm rounded-lg bg-[#FFB84C] py-2 px-4 transition-colors duration-200 hover:bg-[#FFA24B] cursor-pointer text-white font-medium hover:text-black"
+                                                 onClick={e => {
+                                                    addToOrder(meal);
+                                                 }}>
+                                                    <button className="w-full h-full flex items-center justify-center">
                                                         <HiPlus className="text-2xl" />
                                                     </button>
                                                 </div>
@@ -204,9 +217,31 @@ export default function Dashboard({userDetail}: Record<string, any>) {
                 
                     <div className="grid auto-cols-max grid-flow-col gap-2">
                         {
-                            Array.from({ length: 5 }).map((_, index) => (
-                            <div key={index} className="border-2 border-dashed border-slate-600 bg-orange-100 w-[2em] h-[2em] md:w-[6em] md:h-[6em] flex items-center justify-center">
-                                <FaPlus className="text-2xl text-slate-600" />
+                            selectedMeal.map((meal:Meal|null, index) => (
+                            meal === null ?
+                                <div key={index} className="border-2 border-dashed border-slate-600 bg-orange-100 w-[2em] h-[2em] md:w-[6em] md:h-[6em] flex items-center justify-center">
+                                    <FaPlus className="text-2xl text-slate-600" />
+                                </div>
+                            :
+                            // <div key={index} className="border-2 border-solid border-slate-600 rounded-lg w-[2em] h-[2em] md:w-[6em] md:h-[6em] flex items-center justify-center">
+                            //     <img src={meal.image} alt={`plat ${index}`} 
+                            //     className="w-full h-full rounded-lg object-cover" 
+                            //     />
+                            // </div>
+                            
+                            <div key={index} className="border-2 border-solid border-slate-600 rounded-lg w-[2em] h-[2em] md:w-[6em] md:h-[6em] flex items-center justify-center">
+                                <AnimatePresence mode="wait">
+                                    <motion.img
+                                    key={meal.id}
+                                    src={meal.image}
+                                    alt={meal.title}
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    transition={{ duration: 0.3, ease: "easeOut" }}
+                                    className="w-full h-full rounded-lg shadow-lg object-cover"
+                                    />
+                                </AnimatePresence>
                             </div>
                             ))
                         }
