@@ -12,6 +12,7 @@ export async function parseCookiesSigned(context:any): Promise<Record<string, st
         .split(';')
         .map((cookie:string) => cookie.trim().split('='))
         .reduce((acc: Record<string, string>, [key, value]: [string, string]) => ({ ...acc, [key]: value }), {});
+
         
         for (const [key, value] of Object.entries(cookiesFoundRaw)) {
             const isSigned = await verifyCookie(`${value}`, import.meta.env.COOKIE_SIGNATURE_SECRET);
